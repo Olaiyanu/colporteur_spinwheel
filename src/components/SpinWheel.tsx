@@ -26,7 +26,13 @@ const SpinWheel: React.FC<SpinWheelProps> = ({ items, onFinished, isSpinning, se
     winAudio.current = new Audio(SOUND_EFFECTS.win);
     tickAudio.current = new Audio(SOUND_EFFECTS.tick);
     
-    if (spinAudio.current) spinAudio.current.loop = true;
+    if (spinAudio.current) {
+      spinAudio.current.loop = true;
+      spinAudio.current.volume = 0.5;
+    }
+    if (winAudio.current) {
+      winAudio.current.volume = 0.8;
+    }
     
     return () => {
       if (spinAudio.current) {
@@ -61,8 +67,10 @@ const SpinWheel: React.FC<SpinWheelProps> = ({ items, onFinished, isSpinning, se
       ctx.arc(centerX, centerY, radius, startAngle, endAngle);
       ctx.fillStyle = WHEEL_COLORS[i % WHEEL_COLORS.length];
       ctx.fill();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 2;
+      
+      // Subtle inner border for each slice
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      ctx.lineWidth = 1;
       ctx.stroke();
 
       // Draw text
@@ -71,30 +79,39 @@ const SpinWheel: React.FC<SpinWheelProps> = ({ items, onFinished, isSpinning, se
       ctx.rotate(startAngle + sliceAngle / 2);
       ctx.textAlign = 'right';
       ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 14px Inter, sans-serif';
+      ctx.font = 'bold 15px Inter, sans-serif';
       ctx.shadowBlur = 4;
-      ctx.shadowColor = 'rgba(0,0,0,0.3)';
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
       
       // Truncate text if too long
       const displayText = item.length > 12 ? item.substring(0, 10) + '...' : item;
-      ctx.fillText(displayText, radius - 20, 5);
+      ctx.fillText(displayText, radius - 25, 5);
       ctx.restore();
     });
 
-    // Center circle
+    // Outer ring for extra polish
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 40, 0, 2 * Math.PI);
-    ctx.fillStyle = '#ffffff';
-    ctx.fill();
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 4;
+    ctx.arc(centerX, centerY, radius + 5, 0, 2 * Math.PI);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 8;
     ctx.stroke();
 
-    // Inner circle shadow
+    // Center circle with shadow
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 35, 0, 2 * Math.PI);
-    ctx.fillStyle = '#f8f9fa';
+    ctx.arc(centerX, centerY, 42, 0, 2 * Math.PI);
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = 'rgba(0,0,0,0.2)';
     ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 38, 0, 2 * Math.PI);
+    ctx.fillStyle = '#f8f9fa';
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fill();
+    ctx.shadowBlur = 0; // Reset shadow
   };
 
   useEffect(() => {
