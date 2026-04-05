@@ -4,18 +4,18 @@ export const WHEEL_ITEMS = [
   "Handkerchief",
   "Scrunchies",
   "Biros (Mega)",
-  "Nylon",
-  "Nylon",
+  "Pen",
+  "Pen",
   "Biros (Macro)",
   "Highlighter",
-  "Sleeve",
+  "Highlighter",
   "Sticky note",
-  "Nylon",
+  "Pen",
   "Highlighter",
   "Handkerchief",
   "Sticky note",
   "Handkerchief",
-  "Nylon",
+  "Pen",
   "Handkerchief"
 ];
 

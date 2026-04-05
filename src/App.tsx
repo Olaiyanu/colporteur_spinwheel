@@ -54,9 +54,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] flex flex-col items-center justify-center p-4 font-sans selection:bg-indigo-100">
+    <div className="min-h-screen bg-[#f0f2f5] flex flex-col items-center justify-start md:justify-center p-4 md:p-8 font-sans selection:bg-indigo-100 overflow-x-hidden">
       {/* Header */}
-      <div className="text-center mb-12 space-y-4 max-w-4xl w-full">
+      <div className="text-center mt-8 mb-8 md:mb-12 space-y-4 max-w-4xl w-full">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
           <Sparkles size={16} className="text-yellow-500" />
           <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Easter Retreat 2026</span>
