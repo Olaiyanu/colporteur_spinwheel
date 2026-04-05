@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Plus, Trash2, ShoppingBag, Sparkles, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -12,10 +12,16 @@ interface PurchaseFormProps {
 }
 
 const PurchaseForm: React.FC<PurchaseFormProps> = ({ onQualified }) => {
-  const [items, setItems] = useState<PurchaseItem[]>([
-    { id: crypto.randomUUID(), price: '' }
-  ]);
+  const [items, setItems] = useState<PurchaseItem[]>(() => {
+    const savedItems = localStorage.getItem('purchase_items');
+    return savedItems ? JSON.parse(savedItems) : [{ id: crypto.randomUUID(), price: '' }];
+  });
   const [showQualifiedModal, setShowQualifiedModal] = useState(false);
+
+  // Save items to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('purchase_items', JSON.stringify(items));
+  }, [items]);
 
   const total = useMemo(() => {
     return items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);
@@ -48,7 +54,7 @@ const PurchaseForm: React.FC<PurchaseFormProps> = ({ onQualified }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-2 md:p-6">
+    <div className="w-full max-w-xl mx-auto p-6">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -89,26 +95,21 @@ const PurchaseForm: React.FC<PurchaseFormProps> = ({ onQualified }) => {
                     </span>
                   </div>
                   
-                  <div className="flex-1 flex items-center bg-white border-2 border-gray-100 rounded-2xl focus-within:border-indigo-500 focus-within:ring-4 focus-within:ring-indigo-50/50 shadow-sm overflow-hidden transition-all">
-                    <div className="pl-5 pr-2 py-5 bg-gray-50 border-r border-gray-100 select-none">
-                      <span className="text-gray-400 font-black text-xl">₦</span>
+                  <div className="flex-1 flex items-center bg-white border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 shadow-sm overflow-hidden transition-all">
+                    <div className="pl-4 pr-2 py-3 bg-gray-50 border-r border-gray-100 select-none">
+                      <span className="text-gray-400 font-bold text-sm">₦</span>
                     </div>
                     <input
                       type="text"
-                      inputMode="decimal"
                       placeholder="0.00"
                       value={item.price}
                       onChange={(e) => {
-                        // Allow only numbers and one decimal point
-                        const val = e.target.value.replace(/[^0-9.]/g, '');
-                        const parts = val.split('.');
-                        const sanitized = parts[0] + (parts.length > 1 ? '.' + parts[1] : '');
-                        updateItem(item.id, sanitized);
+                        const val = e.target.value;
+                        if (val === '' || /^\d*\.?\d*$/.test(val)) {
+                          updateItem(item.id, val);
+                        }
                       }}
-                      className="w-full px-4 md:px-6 py-4 md:py-5 outline-none text-2xl md:text-3xl font-bold text-black bg-white placeholder:text-gray-300 min-w-0 appearance-none"
-                      autoComplete="off"
-                      autoCorrect="off"
-                      spellCheck="false"
+                      className="w-full px-4 py-3 outline-none text-lg font-bold text-gray-800 bg-white placeholder:text-gray-300 min-w-0"
                       required
                     />
                   </div>

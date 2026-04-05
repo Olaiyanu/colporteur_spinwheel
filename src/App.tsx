@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import SpinWheel from './components/SpinWheel';
 import ResultModal from './components/ResultModal';
@@ -11,8 +11,23 @@ export default function App() {
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentItems, setCurrentItems] = useState<string[]>([...WHEEL_ITEMS]);
-  const [page, setPage] = useState<'purchase' | 'wheel'>('purchase');
+  const [currentItems, setCurrentItems] = useState<string[]>(() => {
+    const savedItems = localStorage.getItem('wheel_items');
+    return savedItems ? JSON.parse(savedItems) : [...WHEEL_ITEMS];
+  });
+  const [page, setPage] = useState<'purchase' | 'wheel'>(() => {
+    const savedPage = localStorage.getItem('current_page');
+    return (savedPage as 'purchase' | 'wheel') || 'purchase';
+  });
+
+  // Save state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('wheel_items', JSON.stringify(currentItems));
+  }, [currentItems]);
+
+  useEffect(() => {
+    localStorage.setItem('current_page', page);
+  }, [page]);
 
   const handleSpinFinished = useCallback((item: string, index: number) => {
     setResult(item);
@@ -45,6 +60,13 @@ export default function App() {
     }, 250);
   }, []);
 
+  const resetWheel = () => {
+    if (window.confirm("Are you sure you want to reset the wheel? This will clear all 'Spin Again' states.")) {
+      setCurrentItems([...WHEEL_ITEMS]);
+      localStorage.removeItem('wheel_items');
+    }
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -54,9 +76,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] flex flex-col items-center justify-start md:justify-center p-4 md:p-8 font-sans selection:bg-indigo-100 overflow-x-hidden">
+    <div className="min-h-screen bg-[#f0f2f5] flex flex-col items-center justify-center p-4 font-sans selection:bg-indigo-100">
       {/* Header */}
-      <div className="text-center mt-8 mb-8 md:mb-12 space-y-4 max-w-4xl w-full">
+      <div className="text-center mb-12 space-y-4 max-w-xl w-full">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
           <Sparkles size={16} className="text-yellow-500" />
           <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Easter Retreat 2026</span>
@@ -122,11 +144,11 @@ export default function App() {
       <div className="mt-16 flex flex-col items-center gap-6">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => window.location.reload()}
+            onClick={resetWheel}
             className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-xl text-sm font-semibold shadow-sm border border-gray-200 hover:bg-gray-50 transition-all active:scale-95"
           >
             <RotateCcw size={14} />
-            Hard Refresh
+            Reset Wheel State
           </button>
         </div>
         
