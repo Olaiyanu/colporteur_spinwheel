@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Plus, Trash2, ShoppingBag, Sparkles, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -12,16 +12,10 @@ interface PurchaseFormProps {
 }
 
 const PurchaseForm: React.FC<PurchaseFormProps> = ({ onQualified }) => {
-  const [items, setItems] = useState<PurchaseItem[]>(() => {
-    const savedItems = localStorage.getItem('purchase_items');
-    return savedItems ? JSON.parse(savedItems) : [{ id: crypto.randomUUID(), price: '' }];
-  });
+  const [items, setItems] = useState<PurchaseItem[]>([
+    { id: crypto.randomUUID(), price: '' }
+  ]);
   const [showQualifiedModal, setShowQualifiedModal] = useState(false);
-
-  // Save items to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('purchase_items', JSON.stringify(items));
-  }, [items]);
 
   const total = useMemo(() => {
     return items.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0);

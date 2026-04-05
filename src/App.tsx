@@ -15,19 +15,12 @@ export default function App() {
     const savedItems = localStorage.getItem('wheel_items');
     return savedItems ? JSON.parse(savedItems) : [...WHEEL_ITEMS];
   });
-  const [page, setPage] = useState<'purchase' | 'wheel'>(() => {
-    const savedPage = localStorage.getItem('current_page');
-    return (savedPage as 'purchase' | 'wheel') || 'purchase';
-  });
+  const [page, setPage] = useState<'purchase' | 'wheel'>('purchase');
 
   // Save state to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('wheel_items', JSON.stringify(currentItems));
   }, [currentItems]);
-
-  useEffect(() => {
-    localStorage.setItem('current_page', page);
-  }, [page]);
 
   const handleSpinFinished = useCallback((item: string, index: number) => {
     setResult(item);
